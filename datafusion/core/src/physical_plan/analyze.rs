@@ -30,6 +30,7 @@ use crate::{
 use arrow::{array::StringBuilder, datatypes::SchemaRef, record_batch::RecordBatch};
 use futures::StreamExt;
 
+use super::cpu_meter::CpuMeterPlan;
 use super::expressions::PhysicalSortExpr;
 use super::{stream::RecordBatchReceiverStream, Distribution, SendableRecordBatchStream};
 use crate::execution::context::TaskContext;
@@ -204,6 +205,11 @@ impl ExecutionPlan for AnalyzeExec {
             .map_err(Into::into);
             // again ignore error
             tx.send(maybe_batch).await.ok();
+
+            let cpu_plan = CpuMeterPlan::new(captured_input.as_ref());
+            let total_cpu_time = cpu_plan.cpu_time();
+
+            println!("total_cpu_time: {}", total_cpu_time);
         });
 
         Ok(RecordBatchReceiverStream::create(

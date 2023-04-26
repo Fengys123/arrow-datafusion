@@ -642,6 +642,8 @@ pub mod analyze;
 pub mod coalesce_batches;
 pub mod coalesce_partitions;
 pub mod common;
+#[allow(missing_docs)]
+pub mod cpu_meter;
 pub mod display;
 pub mod empty;
 pub mod explain;
